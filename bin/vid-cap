@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -n "$1" ]; then
+    exec /usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video$1:fps=60 tv:// -frames 6 -vo png
+else
+    echo "Usage: $0 <video device number>"
+fi

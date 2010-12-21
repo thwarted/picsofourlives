@@ -1,0 +1,15 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Encoding=UTF-8
+Name=kFlickr
+Name[xx]=xxkflickrxx
+Comment=A standalone Flickr uploader for KDE
+Comment[de]=Ein Standalone Flickr.com Uploader fќr KDE
+Comment[fr]=Une application d'envoi de photos sur Flickr
+Comment[xx]=xxA standalone Flickr uploader for KDExx
+Exec=kflickr
+Icon=kflickr
+Type=Application
+Categories=KDE;Graphics;Photography;Network;FileTransfer;
+X-Desktop-File-Install-Version=0.15

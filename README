@@ -1,0 +1,60 @@
+
+http://www.flickr.com/photos/thwarted/sets/72157623777255069/
+
+https://github.com/thwarted/picsofourlives
+
+These scripts take pictures from your webcam when certain events are detected.
+
+watch-for-screensaver
+  if you use xscreensaver, this will take a picture at some random time within
+  a minute after the screensaver is deactivated.  This way it almost
+  guarantees that you'll be at the computer when a picture is taken.
+  I don't know if the ability to watch when the screensaver state change is
+  possible with any other screensavers, I don't use gnome-screensaver, because
+  xscreensaver is much better and more featureful.
+
+watch-for-quake
+  this script attempts to take a picture every five minutes if it sees a
+  connection in netstat to quakelive.com's XMPP server.  This XMPP connection
+  seems to be active all the time when quakelive is running.  I'm trying to
+  see if I can capture any good facial expressions while I'm playing (all
+  I've found so far is that I barely move and am always in the same position
+  when playing).
+
+Start with
+    ctlwatchers start
+
+The watch-for-* scripts will spawn bin/take-picture to actually take the
+picture and they will be placed in the same dir that ctlwatchers exits.
+
+You can put more scripts in bin named watch-for-foo and they will be started
+by the control script.  Send me additional scripts for other events; pull
+requests on github are welcome.
+
+The image files will be named
+    YYYY-MM-DD HH:MM:SS.png
+    YYYY-MM-DD HH:MM:SS (extra text).png
+where the latter form is used if bin/take-picture is passed arguments to be the
+"extra text".
+
+I usually start it manually when I first login, but you can put the following
+in your crontab:
+
+*/5 * * * * /home/user/picsofourlives/ctlwatchers start-if-not-running > /dev/null 2>&1
+
+and it will attempt to start it every 5 minutes.
+
+My process is:
+  - start it when logging in
+  - every once and a while, check the directory for new images (it's a shortcut
+    in my Places menu)
+  - open kflickr using the desktop icon in the directory
+  - drag the ones I want to upload, select the flickr set to upload to
+  - move the ones I've uploaded into pics-transfered
+  - move other ones I didn't upload but that I want to keep into pics-extra
+
+I don't upload every picture taken automatically because sometimes they come
+out crappy (blurry because of movement) and because I deactivate my
+screensaver dozens of times a day and I really only want to make two or three
+at most available from each day.
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+extra=""
+if [ -n "$1" ]; then
+    extra=" ($1)"
+fi
+
+# grab 12 frames and use the 11th one because the camera seems to need to warm up
+# or something and just outputs fully green images
+/usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video0:fps=60 tv:// -frames 12 -vo png
+mv 00000011.png "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
+rm 000000*.png
+
+

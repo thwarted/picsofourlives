@@ -1,0 +1,77 @@
+#!/bin/bash
+
+export PATH=/usr/bin:/bin
+
+cd $( dirname $0 )
+
+isrunning() {
+    local bn="$1"
+    echo -n "$bn: "
+    if [ -s "run/$bn.pid" -a -e /proc/$( cat "run/$bn.pid" )/cmdline ]; then
+        cat /proc/$( cat "run/$bn.pid" )/cmdline | grep -q "$bn"
+        if [ $? -eq 0 ]; then
+            echo "running (pid $( cat "run/$bn.pid" ))"
+            return 0
+        fi
+    fi
+    echo not running
+    return 1
+}
+
+case "$1" in
+
+    start-if-not-running )
+        for watcher in bin/watch-for-*; do
+            bn=$( basename "$watcher" )
+            if ! isrunning "$bn" >/dev/null 2>&1 ; then
+                echo "$bn starting"
+                nohup $watcher >> run/log.out 2>&1 &
+                echo $! > "run/$bn.pid"
+                disown
+            else
+                echo "$bn already running"
+            fi
+        done
+        ;;
+
+    start )
+        for watcher in bin/watch-for-*; do
+            bn=$( basename "$watcher" )
+            echo "$bn starting"
+            nohup $watcher >> run/log.out 2>&1 &
+            echo $! > "run/$bn.pid"
+            disown
+        done
+        ;;
+
+    stop )
+        for pidfile in run/*.pid; do
+            if [ -s "$pidfile" ]; then
+                bn=$( basename "$pidfile" .pid )
+                echo "$bn stopping"
+                kill $( cat "$pidfile" )
+            fi
+            rm -f "$pidfile"
+        done
+        ;;
+
+    status )
+        for watcher in bin/watch-for-*; do
+            bn=$( basename "$watcher" )
+            isrunning "$bn"
+        done
+        ;;
+
+    restart )
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+
+    * )
+        echo "$0 [start|stop|status|restart|start-if-not-running|help]" >&2 
+        ;;
+
+esac
+
+# vim: ts=4 expandtab

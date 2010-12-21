@@ -1,0 +1,11 @@
+#!/bin/bash
+
+qlxmppip=$( host xmpp.quakelive.com | awk '{ print $4 }' )
+
+while [ 0 ]; do
+    if netstat -tn | grep -q ${qlxmppip}: ; then
+        bin/take-picture "playing Quake"
+    fi
+
+    sleep 300
+done

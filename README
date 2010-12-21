@@ -10,7 +10,7 @@ Requirements:
   mplayer
   a working v4l2 compatible webcam (test with the bin/cam-view script)
 
-watch-for-screensaver
+bin/watch-for-screensaver
   if you use xscreensaver, this will take a picture at some random time within
   a minute after the screensaver is deactivated.  This way it almost
   guarantees that you'll be at the computer when a picture is taken.
@@ -18,7 +18,7 @@ watch-for-screensaver
   possible with any other screensavers, I don't use gnome-screensaver, because
   xscreensaver is much better and more featureful.
 
-watch-for-quake
+bin/watch-for-quake
   this script attempts to take a picture every five minutes if it sees a
   connection in netstat to quakelive.com's XMPP server.  This XMPP connection
   seems to be active all the time when quakelive is running.  I'm trying to
@@ -26,8 +26,12 @@ watch-for-quake
   I've found so far is that I barely move and am always in the same position
   when playing).
 
-Start with
+Control with
     ctlwatchers start
+    ctlwatchers stop
+    ctlwatchers status
+    ctlwatchers restart
+    ctlwatchers start-if-not-running
 
 The watch-for-* scripts will spawn bin/take-picture to actually take the
 picture and they will be placed in the same dir that ctlwatchers exits.
@@ -42,12 +46,12 @@ The image files will be named
 where the latter form is used if bin/take-picture is passed arguments to be the
 "extra text".
 
-I usually start it manually when I first login, but you can put the following
-in your crontab:
+I usually start it manually when I first login, but you can put something like
+the following in your crontab:
 
 */5 * * * * /home/user/picsofourlives/ctlwatchers start-if-not-running > /dev/null 2>&1
 
-and it will attempt to start it every 5 minutes.
+which will attempt to start it every 5 minutes.
 
 My process is:
   - start it when logging in

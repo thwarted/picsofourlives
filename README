@@ -5,6 +5,11 @@ https://github.com/thwarted/picsofourlives
 
 These scripts take pictures from your webcam when certain events are detected.
 
+Requirements:
+  bash
+  mplayer
+  a working v4l2 compatible webcam (test with the bin/cam-view script)
+
 watch-for-screensaver
   if you use xscreensaver, this will take a picture at some random time within
   a minute after the screensaver is deactivated.  This way it almost

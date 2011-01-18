@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use POSIX qw(:sys_wait_h strftime);
+
+my $locked = 0;
+my $picpid = 0;
+my $cmd = "dbus-monitor --session \"type='signal',interface='org.gnome.ScreenSaver',member='ActiveChanged'\"";
+
+
+$SIG{'CHLD'} = 'IGNORE';
+
+$SIG{'HUP'} = sub {
+    $picpid = 0;
+    print localtime().": child told me it died\n";
+};
+
+sub sleep_and_take_picture {
+    my $ppid = shift;
+    $0 = "pic taker";
+    sleep(10+int(rand(50)));
+    print localtime().": taking pic\n";
+    kill HUP => $ppid;
+    system("bin/take-picture");
+    exit(0);
+}
+
+open (IN, "$cmd |");
+
+while (<IN>) {
+    if (m/^\s+boolean true/) {
+        if (!$locked) {
+            print localtime().": locked\n";
+            $locked = 1;
+            if ($picpid) {
+                print localtime().": killing child $picpid\n";
+                kill 9 => $picpid;
+                $picpid = 0;
+            }
+        }
+    } elsif (m/^\s+boolean false/) {
+        if ($locked) {
+            my $me = $$;
+            if ($picpid) {
+                print localtime().": killing child $picpid\n";
+                kill 9 => $picpid;
+                $picpid = 0;
+            }
+            if (!($picpid = fork)) {
+                &sleep_and_take_picture($me);
+            }
+            print localtime().": unlocked\n";
+            $locked = 0;
+        }
+    } else {
+        print localtime().": $_";
+    }
+}
+

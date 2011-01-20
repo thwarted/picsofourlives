@@ -4,6 +4,8 @@ export PATH=/usr/bin:/bin
 
 cd $( dirname $0 )
 
+mkdir -p run
+
 isrunning() {
     local bn="$1"
     echo -n "$bn: "

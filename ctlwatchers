@@ -9,7 +9,7 @@ mkdir -p run
 isrunning() {
     local bn="$1"
     echo -n "$bn: "
-    if [ -s "run/$bn.pid" -a -e /proc/$( cat "run/$bn.pid" )/cmdline ]; then
+    if [ -s "run/$bn.pid" ] && kill -0 $( cat "run/$bn.pid" 2>/dev/null ) 2>/dev/null;  then
         cat /proc/$( cat "run/$bn.pid" )/cmdline | grep -q "$bn"
         if [ $? -eq 0 ]; then
             echo "running (pid $( cat "run/$bn.pid" ))"

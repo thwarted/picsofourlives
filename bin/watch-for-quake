@@ -7,5 +7,5 @@ while [ 0 ]; do
         bin/take-picture "playing Quake"
     fi
 
-    sleep 300
+    sleep 600
 done

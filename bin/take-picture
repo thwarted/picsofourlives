@@ -5,14 +5,32 @@ if [ -n "$1" ]; then
     extra=" ($1)"
 fi
 
-# grab 12 frames and use the 11th one because the camera seems to need to warm up
-# or something and just outputs fully green images
-/usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video0:fps=60 tv:// -frames 12 -vo png
-if [ -e 00000011.png ]; then
-    # mplayer may fail to interface with the camera, but it doesn't seem to generate a non-zero exit code
-    # so just assume that if it didn't generate an 11th frame, it didn't actually work
-    mv 00000011.png "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
-    rm 000000*.png
-fi
+function rename_image() {
+    local imagefile="$1"
+    if [ -e "$imagefile" ]; then
+        echo mv "$imagefile" "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
+        mv "$imagefile" "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
+    fi
+}
 
+# grab 20 frames because the camera seems to need to warm up or
+# something and just outputs fully green images ...
+/usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video0:fps=60 tv:// -frames 20 -vo png
+
+if which pngtopnm >/dev/null 2>&1 && which ppmhist >/dev/null 2>&1 ; then
+    # ... and find the first one that has more than 1000 colors
+    for x in 000*.png ; do
+        if [ "$( pngtopnm "$x" | ppmhist | wc -l )" -gt 1000 ]; then
+            rename_image "$x"
+            break
+        fi
+    done
+else
+    # ... can't find netpbm stuff, so just use one of the later frames assuming it's good
+
+    # mplayer may fail to interface with the camera, but it doesn't seem to generate a non-zero exit code
+    # so just assume that if it didn't generate a 19th frame, it didn't actually work
+    rename_image 00000019.png
+fi
+rm -f 000000*.png
 

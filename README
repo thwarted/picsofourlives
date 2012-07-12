@@ -10,21 +10,34 @@ Requirements:
   mplayer
   a working v4l2 compatible webcam (test with the bin/cam-view script)
 
-bin/watch-for-screensaver
-  if you use xscreensaver, this will take a picture at some random time within
-  a minute after the screensaver is deactivated.  This way it almost
-  guarantees that you'll be at the computer when a picture is taken.
-  I don't know if the ability to watch when the screensaver state change is
-  possible with any other screensavers, I don't use gnome-screensaver, because
-  xscreensaver is much better and more featureful.
+Optional:
+  netpbm (to work around camera warmup time)
 
-bin/watch-for-quake
-  this script attempts to take a picture every five minutes if it sees a
-  connection in netstat to quakelive.com's XMPP server.  This XMPP connection
-  seems to be active all the time when quakelive is running.  I'm trying to
-  see if I can capture any good facial expressions while I'm playing (all
-  I've found so far is that I barely move and am always in the same position
-  when playing).
+
+There are scripts to detect different actions:
+
+  bin/watch-for-screensaver
+    if you use xscreensaver, this will take a picture at some random time
+    within a minute after the screensaver is deactivated.  This way it almost
+    guarantees that you'll be at the computer when a picture is taken.
+
+  bin/watch-for-gnome-screensaver
+    integrates with dbus to receive events from gnome-screensaver, same as
+    above.
+
+  bin/watch-for-quake
+    this script attempts to take a picture every five minutes if it sees a
+    connection in netstat to quakelive.com's XMPP server.  This XMPP
+    connection seems to be active all the time when quakelive is running.
+    I'm trying to see if I can capture any good facial expressions while I'm
+    playing (all I've found so far is that I barely move and am always in the
+    same position when playing).
+
+You can put more scripts in bin named watch-for-foo and they will be started
+by the control script.  Send me additional scripts for other events; pull
+requests on github are welcome.
+
+
 
 Control with
     ctlwatchers start
@@ -34,11 +47,9 @@ Control with
     ctlwatchers start-if-not-running
 
 The watch-for-* scripts will spawn bin/take-picture to actually take the
-picture and they will be placed in the same dir that ctlwatchers exits.
+picture and they will be placed in the same dir that ctlwatchers exists,
+unless you set PICSOFOURLIVES_DESTDIR to a directory name.
 
-You can put more scripts in bin named watch-for-foo and they will be started
-by the control script.  Send me additional scripts for other events; pull
-requests on github are welcome.
 
 The image files will be named
     YYYY-MM-DD HH:MM:SS.png
@@ -46,10 +57,11 @@ The image files will be named
 where the latter form is used if bin/take-picture is passed arguments to be the
 "extra text".
 
+
 I usually start it manually when I first login, but you can put something like
 the following in your crontab:
 
-*/5 * * * * /home/user/picsofourlives/ctlwatchers start-if-not-running > /dev/null 2>&1
+*/5 * * * * PICSOFOURLIVES_DESTDIR=/target/dir /home/user/picsofourlives/ctlwatchers start-if-not-running > /dev/null 2>&1
 
 which will attempt to start it every 5 minutes.
 

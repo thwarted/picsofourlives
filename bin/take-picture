@@ -5,11 +5,14 @@ if [ -n "$1" ]; then
     extra=" ($1)"
 fi
 
+if [ -z "$PICSOFOURLIVES_DESTDIR" -o ! -d "$PICSOFOURLIVES_DESTDIR" ]; then
+    PICSOFOURLIVES_DESTDIR=.
+fi
+
 function rename_image() {
     local imagefile="$1"
     if [ -e "$imagefile" ]; then
-        echo mv "$imagefile" "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
-        mv "$imagefile" "$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
+        mv "$imagefile" "$PICSOFOURLIVES_DESTDIR/$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
     fi
 }
 

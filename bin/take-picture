@@ -16,9 +16,14 @@ function rename_image() {
     fi
 }
 
-# grab 20 frames because the camera seems to need to warm up or
-# something and just outputs fully green images ...
-/usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video0:fps=60 tv:// -frames 20 -vo png
+for vdev in /dev/video{2,1,0}; do
+    if [[ -c $vdev ]]; then
+        # grab 20 frames because the camera seems to need to warm up or
+        # something and just outputs fully green images ...
+        /usr/bin/mplayer -tv driver=v4l2:width=1280:height=720:device=$vdev:fps=60 tv:// -frames 20 -vo png
+        break                                                                                                                                                                     
+    fi
+done
 
 if which pngtopnm >/dev/null 2>&1 && which ppmhist >/dev/null 2>&1 ; then
     # ... and find the first one that has more than 1000 colors

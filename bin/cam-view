@@ -1,7 +1,17 @@
 #!/bin/bash
 
-if [ -n "$1" ]; then
-    exec /usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video$1:fps=60 tv://
+if [[ -n "$1" ]]; then
+    if [[ "$1" == "scan" ]]; then
+        for vdev in /dev/video{2,1,0}; do
+            if [[ -c $vdev ]]; then
+                exec /usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=$vdev:fps=60 tv://
+                break
+            fi
+        done
+        exit 0
+    else
+        exec /usr/bin/mplayer -tv driver=v4l2:width=640:height=480:device=/dev/video$1:fps=60 tv://
+    fi
 else
-    echo "Usage: $0 <video device number>"
+    echo "Usage: $0 <video device number> | scan"
 fi

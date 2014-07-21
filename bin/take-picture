@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PATH=/bin:/usr/bin
+
 extra=""
 if [ -n "$1" ]; then
     extra=" ($1)"
@@ -12,7 +14,12 @@ fi
 function rename_image() {
     local imagefile="$1"
     if [ -e "$imagefile" ]; then
-        mv "$imagefile" "$PICSOFOURLIVES_DESTDIR/$( printf '%s%s.png' "$( date +'%Y-%m-%d %T' )" "$extra" )"
+        label="$( date +'%Y-%m-%d %T' )$extra"
+        mv "$imagefile" "$PICSOFOURLIVES_DESTDIR/$label.png"
+        if which notify-send; then
+            # notify-send requires a full path to the icon filename
+            notify-send --icon="$( readlink -f "$PICSOFOURLIVES_DESTDIR/$label.png" )" "photo captured" "$label"
+        fi
     fi
 }
 
